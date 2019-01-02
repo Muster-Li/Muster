@@ -1,0 +1,18 @@
+public class Test1 {
+	public static void main(String[] args) {
+		System.out.print("玩几层的汉诺塔：");
+		int n = new Scanner(System.in).nextInt();
+
+		f(n,"A","B","C");
+	}
+	private static void f(int n, String z1, String z2, String z3) {
+		//最简问题的判断
+		if(n==1) {
+			System.err.println(z1+"->"+z3);
+			return;
+		}		
+		f(n-1,z1,z3,z2);//n-1层，z1->z2->z3
+		f(1,z1,z2,z3);//最底下一层，z1->z2->z3
+		f(n-1,z2,z1,z3);//z2上的n-1层，z2->z1_z3
+	}
+}
