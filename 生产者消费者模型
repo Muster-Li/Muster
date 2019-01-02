@@ -1,0 +1,92 @@
+public class Consumer extends Thread {
+	private Stack stack;
+
+	public Consumer(Stack stack) {
+		this.stack = stack;
+	}
+	@Override
+	public void run() {
+		while (true) {
+			synchronized (stack) {
+				//栈是空的,消费者线程等待
+				if(stack.isEmpty()) {
+					try {
+						stack.wait();
+					} catch (InterruptedException e) {
+					}
+				}
+				char c = stack.pop();
+				System.out.println("弹出>>" + c);
+				stack.notifyAll();//通知在栈兑现上等待的其他线程
+			}
+		}
+	}
+}
+
+
+public class Producer extends Thread{
+	private Stack stack;
+
+	public Producer(Stack stack) {
+		this.stack = stack;
+	}
+	@Override
+	public void run() {
+		while(true) {
+			char c  = (char)('a'+new Random().nextInt(26));
+			synchronized (stack) {
+				if(stack.isFull()) {
+					try {
+						stack.wait();
+					} catch (InterruptedException e) {
+					}
+				}
+				stack.push(c);				
+				System.out.println("压入>>"+c);
+				stack.notifyAll();
+			}
+		}
+	}
+}
+
+
+
+public class Stack {
+	private char[] a = new char[5];
+	private int index;
+
+	public void push(char c) {
+		if(index == 5) {
+			return;
+		}
+		a[index] = c;
+		index++;
+	}
+
+	public char pop() {
+		if(index == 0) {
+			return ' ';
+		}
+		index--;
+		char c = a[index];
+		return c;
+	}
+	public boolean isEmpty() {
+		return index== 0;
+	}
+	public boolean isFull() {
+		return index ==5;
+	}
+}
+
+
+
+public class Test1 {
+	public static void main(String[] args) {
+		Stack stack = new Stack();
+		Producer p = new Producer(stack);
+		Consumer c = new Consumer(stack);
+		p.start();
+		c.start();
+	}
+}
