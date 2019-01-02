@@ -1,0 +1,69 @@
+public class EchoClient {
+	public static void main(String[] args) throws Exception {
+		Socket s = new Socket("176.17.5.21", 8000);
+		BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(), "UTF-8"));
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+		while (true) {
+			System.out.print("输入:");
+			String str = new Scanner(System.in).nextLine();
+			out.println(str);
+			out.flush();
+			System.out.println("内容以发送");
+			str = in.readLine();
+			System.out.println("收到服务器回信:" + str);
+		}
+	}
+}
+
+
+public class EchoServer {
+	public void start() {
+		//启动服务线程
+		new Thread() {
+			public void run() {
+				try {
+					//启动服务
+					ServerSocket ss = new ServerSocket(8000);
+					System.out.println("服务器已启动");
+					while(true) {
+						Socket s = ss.accept();
+						TongXinThread t = new TongXinThread(s);
+						t.start();
+					}
+				} catch (Exception e) {
+					System.out.println("服务无法启动或服务已停止");
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
+	class TongXinThread extends Thread{
+		Socket s;
+
+		public TongXinThread(Socket s) {
+			this.s = s;
+		}
+		@Override
+		public void run() {
+			try {
+				//通信协议
+				//通信执行流程和数据格式
+				//通讯流程:循环从客户端接受数据,收到的输出在发回客户端
+				//数据格式:UTF-8编码的字符串,每一行行尾,要有一个换行符
+				BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(),"UTF-8"));
+				PrintWriter out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(),"UTF-8"));
+				String line;
+				while((line = in.readLine()) != null) {
+					out.print(line);
+					out.flush();
+				}
+			} catch (Exception e) {}
+			System.out.println("客户端断开连接");
+		}
+	}
+	public static void main(String[] args) {
+		EchoServer s = new EchoServer();
+		s.start();
+	}
+}
