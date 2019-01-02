@@ -1,0 +1,6 @@
+Spring代理原则:
+1.被代理者有接口:默认使用jdk代理
+2.被代理者没有接口:默认使用cglib代理   特点:cglib创建的代理对象是被代理者的子类
+proxy-target-class="true" 强制使用cglib代理
+within(包名.类型)粗粒度的匹配 只要是类中的方法都要执行通知
+execution(返回值类型  包名.类名.方法名(参数列表))
