@@ -1,0 +1,50 @@
+public class Client1 {
+	public static void main(String[] args) throws Exception {
+		//客户端的Socket自己新建
+		Socket s = new Socket("176.17.5.34",8000);
+		
+		InputStream in = s.getInputStream();
+		OutputStream out = s.getOutputStream();
+		
+		System.out.println("向服务器发送Hello");
+		out.write("Hello".getBytes());
+		out.flush();
+		System.out.println("发送完成");
+		System.out.println("\n\n-------------------");
+		for(int i =0;i<5;i++) {
+			char c = (char)in.read();
+			System.out.println(c);
+		}
+			System.out.print("接受完毕");
+			s.close();//断开连接
+	}
+}
+
+
+
+public class Server1 {
+	public static void main(String[] args) throws Exception {
+		// 选择一个端口,启动服务
+		// 端口如果被其他程序占用,会出错
+		ServerSocket ss = new ServerSocket(8000);
+		System.out.println("服务已启动");
+		// 等待客户端发起连接,并建立连接通道
+		Socket s = ss.accept();
+		// 从连接通道,获得双向的流
+		InputStream in = s.getInputStream();
+		OutputStream out = s.getOutputStream();
+
+		for (int i = 0; i < 5; i++) {
+			char c = (char)in.read();
+			System.out.print(c);
+		}
+		System.out.println("\n\n------------------------------");
+		
+		out.write("world".getBytes());
+		out.flush();
+		
+		s.close();//断开连接
+		ss.close();//停止服务,释放端口
+
+	}
+}
