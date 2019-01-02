@@ -1,0 +1,48 @@
+public class test1 {
+	public static void main(String[] args) {
+		// 产生一个随机乱序数组
+		int[] a = suiji();
+		System.out.println(Arrays.toString(a));
+		System.out.println("_________________________________________________________");
+		sort(a);// 对数组进行排序
+
+		System.out.println("_________________________________________________________");
+		System.out.println(Arrays.toString(a));
+	}
+
+	private static int[] suiji() {
+		// 先产生一个随机整数值，存到变量n
+		// 范围5+[0,6)
+		int n = new Random().nextInt(6) + 5;
+
+		// 新建int [],长度n 地址存到变量a
+		int[] a = new int[n];
+
+		// 遍历填入100内随机整数
+
+		for (int i = 0; i < a.length; i++) {
+			a[i] = new Random().nextInt(100);
+		}
+
+		return a;
+	}
+
+	private static void sort(int[] a) { // 排序函数
+
+		for (int i = 0; i < a.length; i++) {
+			boolean flag = false;
+			for (int j = a.length - 1; j > i; j--) {
+				if (a[j] < a[j - 1]) {
+					int t = a[j];
+					a[j] = a[j - 1];
+					a[j - 1] = t;
+					flag = true;
+				}
+			}
+			if (!flag) {
+				break;
+			}
+			System.out.println(Arrays.toString(a));
+		}
+	}
+}
