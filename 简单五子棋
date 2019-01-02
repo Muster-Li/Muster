@@ -1,0 +1,99 @@
+public class Test1 {
+	public static void main(String[] args) {
+		ChessBoard r = new ChessBoard();
+		r.board();
+		Chess b = new Chess();
+		while (true) {
+			b.play();
+			if (b.flag) {
+				break;
+			}
+		}
+	}
+}
+
+
+
+public class ChessBoard {
+
+	char[][] chessBoard = { 
+			{ ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' },
+			{ '0', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '1', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '2', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '3', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '4', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '5', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '6', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '7', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '8', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ '9', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ 'a', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ 'b', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ 'c', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ 'd', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ 'e', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' },
+			{ 'f', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+' }, };
+
+	public ChessBoard() {
+	}
+
+	public void board() {
+
+		for (int i = 0; i < chessBoard.length; i++) {
+			for (int j = 0; j < chessBoard[i].length; j++) {
+				System.out.print(chessBoard[i][j]);
+			}
+			System.out.println();
+		}
+	}
+}
+
+
+
+
+public class Chess extends ChessBoard {
+
+	public static int w;
+	public static boolean flag;
+
+	public void play() {
+
+		while (true) {
+			System.out.print("请黑手落子(纵行)：");
+			int a = Integer.parseInt(new Scanner(System.in).nextLine(), 16);
+			System.out.print("请黑手落子(横行)：");
+			int b = Integer.parseInt(new Scanner(System.in).nextLine(), 16);
+			if (chessBoard[a + 1][b + 1] != '+') {
+				System.out.println("当前位置已经有棋子了，请重新输入！");
+			} else {
+				chessBoard[a + 1][b + 1] = '#';
+				break;
+			}
+		}
+		board();
+		w = win();
+		if (w == 1) {
+			flag = true;
+			return;
+		}
+		while (true) {
+			System.out.print("请白手落子(纵行)：");
+			int c = Integer.parseInt(new Scanner(System.in).nextLine(), 16);
+			System.out.print("请白手落子(横行)：");
+			int d = Integer.parseInt(new Scanner(System.in).nextLine(), 16);
+			if (chessBoard[c + 1][d + 1] != '+') {
+				System.out.println("当前位置已经有棋子了，请重新输入！");
+			} else {
+				chessBoard[c + 1][d + 1] = 'O';
+				break;
+			}
+		}
+		board();
+		w = win();
+		if (w == 2) {
+			flag = true;
+			return;
+		}
+
+	}
