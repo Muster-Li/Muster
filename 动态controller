@@ -1,0 +1,8 @@
+当有多个URL请求时,要写多个controller方法,这样太繁琐了.
+@RequestMapping("/page/{moduleName}")
+	public String item(@PathVariable String moduleName){
+		return moduleName;
+	}
+	 * 1.url中参数必须用"/"进行分割 /page/item-add
+	 * 2.requestMapping接受参数时,采用{参数名称}进行接受
+	 * 3.方法接受参数时,采用注解+参数名称形式获取数据
