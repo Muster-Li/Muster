@@ -1,0 +1,49 @@
+public class Test1 {
+	public static void main(String[] args) {
+		// 随机产生一个乱序数组
+		int[] a = suiji();
+		// 对数组a排序
+		Arrays.sort(a);
+		System.out.println(Arrays.toString(a));
+		System.out.print("查找的目标值：");
+		int t = new Scanner(System.in).nextInt();
+
+		// 在有序数组a中 查找目标值t的位置
+		// 如果找不到，返回附属 无意义值
+		int index = binarySearch(a, t);
+
+		if (index >= 0) {
+			System.out.println("下标位置：" + index);
+		} else {
+			System.out.println("目标值不存在");
+		}
+	}
+
+	private static int[] suiji() {
+		int n = new Random().nextInt(6) + 5;
+		int[] a = new int[n];
+		for (int i = 0; i < a.length; i++) {
+			a[i] = new Random().nextInt(100);
+		}
+		return a;
+	}
+
+	private static int binarySearch(int[] a, int t) {
+
+		int lo = 0;
+		int hi = a.length - 1;
+		int mid;
+
+		while (lo <= hi) {
+			mid = (lo + hi) / 2;
+			if (a[mid] > t) {
+				hi = mid - 1;
+			} else if (a[mid] < t) {
+				lo = mid + 1;
+			} else {
+				return mid;
+			}
+		}
+		return -1;
+	}
+}
