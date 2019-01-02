@@ -1,0 +1,200 @@
+public class ChatClient {
+	private Socket s;
+	private BufferedReader in;
+	private PrintWriter out;
+	private LinkedList<String> list = new LinkedList<>();
+	private boolean inputFlag = false;
+
+	public void start() {
+		try {
+			s = new Socket("176.17.5.43", 8000);
+			in = new BufferedReader(new InputStreamReader(s.getInputStream(), "UTF-8"));
+			out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+			System.out.println("已经连接服务区");
+			System.out.print("给自己起个名字:");
+			String name = new Scanner(System.in).nextLine();
+			out.println(name);
+			out.flush();
+
+			// 输入聊天内容的线程
+			new Thread() {
+				public void run() {
+					input();
+				}
+			}.start();
+			// 接受聊天服务器数据的线程
+			new Thread() {
+				@Override
+				public void run() {
+					receiver();
+				}
+			}.start();
+			//打印线程
+			new Thread() {
+				public void run() {
+					print();
+				}
+			}.start();
+		} catch (Exception e) {
+			System.out.println("无法连接服务器");
+		}
+	}
+
+	protected void print() {
+		while(true) {
+			synchronized (list) {				
+			//没有数据,或者用户正在输入,进程暂停等待
+			while(list.size() ==0 || inputFlag) {
+				try {
+					list.wait();
+				} catch (InterruptedException e) {
+				}
+			}
+			String str = list.removeFirst();
+			System.out.println(str);
+			}
+		}
+	}
+	protected void input() {
+		System.out.println("按回车输入聊天内容");
+		while(true) {
+			new Scanner(System.in).nextLine();
+			System.out.print("输入聊天内容:");
+			String s = new Scanner(System.in).nextLine();
+			out.println(s);
+			out.flush();
+			inputFlag = false;
+			synchronized (list) {
+				list.notifyAll();				
+			}
+		}
+	}
+
+	protected void receiver() {
+		try {
+			String line;
+			while((line = in.readLine())!= null) {
+				synchronized (list) {
+					list.add(line);
+					list.notifyAll();
+				}
+			}
+		} catch (IOException e) {
+		
+		}
+		System.out.println("已经与服务器断开连接");
+	}
+	public static void main(String[] args) {
+		new ChatClient().start();
+	}
+}
+
+
+
+
+
+
+public class ChatServer {
+	private List<TongXinThread> list = new ArrayList<>();
+
+	public void start() {
+		// 启动服务线程
+		new Thread() {
+			public void run() {
+				try {
+					
+					ServerSocket ss = new ServerSocket(8000);
+					System.out.println("聊天室服务器已启动");
+					while (true) {
+						Socket s = ss.accept();
+						TongXinThread t = new TongXinThread(s);
+						t.start();
+						synchronized (list) {
+							list.add(t);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("服务器已停止或服务器无法启动");
+				}
+			}
+		}.start();
+	}
+
+	class TongXinThread extends Thread {
+		Socket s;
+		BufferedReader in;
+		PrintWriter out;
+		String name;
+
+		public TongXinThread(Socket s) {
+			this.s = s;
+			
+		}
+
+		public void send(String msg) {
+			out.println(msg);
+			out.flush();
+		}
+
+		public void sendAll(String msg) {
+			synchronized (list) {
+				for (TongXinThread t : list) {
+					t.send(msg);
+				}
+			}
+		}
+
+		@Override
+		public void run() {
+			try {
+				in = new BufferedReader(new InputStreamReader(s.getInputStream(), "UTF-8"));
+				out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), "UTF-8"));
+				// 接受客户端的昵称
+				name = in.readLine();
+				// 发送欢迎信息
+				send(name + "欢迎来到基情聊天室!");
+				
+				// 群发上线信息
+				synchronized (list) {
+					sendAll(name + "进入了聊天室,在线人数:" + list.size());
+					System.out.println(name + "进入了聊天室,在线人数:" + list.size());
+				}
+				s.setSoTimeout(3000);
+				int count = 0;
+				
+				String line;
+				while (true) {
+					try {	
+						line = in.readLine();
+						if (line == null) {
+							break;
+						}
+						sendAll(name + "说:" + line);
+						System.out.println(name + "说:" + line);
+						count =0;
+					} catch (SocketTimeoutException e) {
+						count++;
+						if(count == 4) {
+							send("您的菊花被艹翻了");
+							s.close();
+							break;
+						}
+						send("请jj参与搞基("+count+"/3)");
+					}
+				}
+			} catch (Exception e) {
+			}
+			synchronized (list) {
+				// 移除当前通信线程对象
+				list.remove(this);
+				// 群发一个离线消息
+				sendAll(name + "离开了聊天室,在线人数:" + list.size());
+				System.out.println(name + "离开了聊天室,在线人数:" + list.size());
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		new ChatServer().start();
+	}
+}
