@@ -1,0 +1,7 @@
+join适合在数据量小的时候使用,如果有大量数据join的效率极低
+当有大量数据的时候可以先进行一次查询然后将数据存到map集合里面,后面用到再取出来
+ List<NodeDO> nodeLs = nodeDAO.selectAll();
+        Map<Long, NodeDO> nodeMap = new HashMap<>(nodeLs.size());
+        nodeLs.forEach(node-> nodeMap.put(node.getId(), node));
+        data [i][3] = response.getNodeName() ==-1L ? "客服":nodeMap.get(response.getNodeName()).getNodeName();
+这个方法比join效率能提高4倍多,这个方法当数据量到百万级别以上的时候 也不适用了.当数据量太大应分库分表
