@@ -1,8 +1,8 @@
-一、WebMvcConfigurerAdapter是什么
+##一、WebMvcConfigurerAdapter是什么
 Spring内部的一种配置方式
 采用JavaBean的形式来代替传统的xml配置文件形式进行针对框架个性化定制
 
-二、WebMvcConfigurerAdapter常用的方法
+##二、WebMvcConfigurerAdapter常用的方法
 /** 解决跨域问题 **/
 public void addCorsMappings(CorsRegistry registry) ;
 
