@@ -1,0 +1,33 @@
+public static String longestCommonPrefix(String[] strs) {
+    	Map<String,Integer> map = new HashMap<>();
+    	if(strs.length ==0) {
+    		return "";
+    	}
+    	for(int i =0;i<strs.length;i++) {
+    		if(i==0) {
+    			for(int j=1;j<=strs[0].length();j++) {
+    				String a = strs[0].substring(0,j);
+    				map.put(a,1);
+    			}
+    		}else {
+    			for(int j=1;j<=strs[i].length();j++) {
+    				String a = strs[i].substring(0,j);
+    				Integer count = map.get(a);
+    				if(count !=null) {
+    					map.put(a, ++count);
+    				}
+    			}
+    		}
+    	}
+    	if(!map.containsValue(strs.length)) {
+    		return "";
+    	}
+    	String result = "";
+    	for(String key: map.keySet()){
+            if(map.get(key).equals(strs.length)){
+                result = key.length() > result.length() ? key : result;
+            }
+        }
+    	
+        return result;
+    }
